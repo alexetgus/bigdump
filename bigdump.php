@@ -29,7 +29,7 @@ error_reporting(E_ALL);
 // 7. Wait for the script to finish, do not close the browser window
 // 8. IMPORTANT: Remove bigdump.php and your dump files from the web server
 
-// If Timeout errors still occure you may need to adjust the $linepersession setting in this file
+// If Timeout errors still occure you may need to adjust the $linespersession setting in this file
 
 // LAST CHANGES
 
@@ -301,7 +301,7 @@ function skin_close()
 }
 
 skin_open();
-echo ('<h1>BigDump: Staggered MySQL Dump Importer v'.VERSION.'</h1>');
+echo ('<h1>BigDump : Importateur de dump MySQL v'.VERSION.'</h1>');
 skin_close();
 
 do_action('after_headline');
@@ -312,14 +312,14 @@ $file  = false;
 // Check PHP version
 
 if (!$error && !function_exists('version_compare'))
-{ echo ("<p class=\"error\">PHP version 4.1.0 is required for BigDump to proceed. You have PHP ".phpversion()." installed. Sorry!</p>\n");
+{ echo ("<p class=\"error\">PHP version 4.1.0 est requis pour que Bigdump fonctionne. Vous avez la version PHP ".phpversion()." installée. Désolé !</p>\n");
   $error=true;
 }
 
 // Check if mysql extension is available
 
 if (!$error && !function_exists('mysqli_connect'))
-{ echo ("<p class=\"error\">There is no mySQLi extension found in your PHP installation. You can use an older Bigdump version if your PHP supports mySQL extension.</p>\n");
+{ echo ("<p class=\"error\">Aucune extension mySQLi n'a été trouvée dans votre installation de PHP. Vous pouvez utiliser une version plus ancienne de Bigdump si votre PHP prend en charge que l'extension mySQL.</p>\n");
   $error=true;
 }
 
@@ -360,21 +360,21 @@ if (!$error && isset($_REQUEST["uploadbutton"]))
     do_action('file_uploaded');
 
     if (file_exists($uploaded_filename))
-    { echo ("<p class=\"error\">File $uploaded_filename already exist! Delete and upload again!</p>\n");
+    { echo ("<p class=\"error\">Le fichier $uploaded_filename existe déjà ! Supprimez le et relancez ce script !</p>\n");
     }
     else if (!preg_match("/(\.(sql|gz|csv))$/i",$uploaded_filename))
-    { echo ("<p class=\"error\">You may only upload .sql .gz or .csv files.</p>\n");
+    { echo ("<p class=\"error\">Vous ne pouvez uploader que les fichiers du type .sql .gz ou .csv</p>\n");
     }
     else if (!@move_uploaded_file($_FILES["dumpfile"]["tmp_name"],$uploaded_filepath))
-    { echo ("<p class=\"error\">Error moving uploaded file ".$_FILES["dumpfile"]["tmp_name"]." to the $uploaded_filepath</p>\n");
-      echo ("<p>Check the directory permissions for $upload_dir (must be 777)!</p>\n");
+    { echo ("<p class=\"error\">Erreur de déplacement du fichier uploadé ".$_FILES["dumpfile"]["tmp_name"]." vers $uploaded_filepath</p>\n");
+      echo ("<p>Vérifiez les permissions pour le répertoire $upload_dir (doit être 777)!</p>\n");
     }
     else
-    { echo ("<p class=\"success\">Uploaded file saved as $uploaded_filename</p>\n");
+    { echo ("<p class=\"success\">Fichier uploadé sauvegardé dans $uploaded_filename</p>\n");
     }
   }
   else
-  { echo ("<p class=\"error\">Error uploading file ".$_FILES["dumpfile"]["name"]."</p>\n");
+  { echo ("<p class=\"error\">Erreur lors de l'envoi du fichier ".$_FILES["dumpfile"]["name"]."</p>\n");
   }
 }
 
@@ -383,9 +383,9 @@ if (!$error && isset($_REQUEST["uploadbutton"]))
 
 if (!$error && isset($_REQUEST["delete"]) && $_REQUEST["delete"]!=basename($_SERVER["SCRIPT_FILENAME"]))
 { if (preg_match("/(\.(sql|gz|csv))$/i",$_REQUEST["delete"]) && @unlink($upload_dir.'/'.$_REQUEST["delete"])) 
-    echo ("<p class=\"success\">".$_REQUEST["delete"]." was removed successfully</p>\n");
+    echo ("<p class=\"success\">".$_REQUEST["delete"]." a été supprimé avec succès</p>\n");
   else
-    echo ("<p class=\"error\">Can't remove ".$_REQUEST["delete"]."</p>\n");
+    echo ("<p class=\"error\">Impossible de supprimer ".$_REQUEST["delete"]."</p>\n");
 }
 
 // Connect to the database, set charset and execute pre-queries
@@ -394,8 +394,8 @@ if (!$error && !TESTMODE)
 { $mysqli = new mysqli($db_server, $db_username, $db_password, $db_name);
   
   if (mysqli_connect_error()) 
-  { echo ("<p class=\"error\">Database connection failed due to ".mysqli_connect_error()."</p>\n");
-    echo ("<p>Edit the database settings in BigDump configuration, or contact your database provider.</p>\n");
+  { echo ("<p class=\"error\">La connexion à la base de données a échoué. Raison : ".mysqli_connect_error()."</p>\n");
+    echo ("<p>Modifiez les paramètres de la base de données dans la configuration BigDump ou contactez votre fournisseur de base de données.</p>\n");
     $error=true;
   }
   if (!$error && $db_connection_charset!=='')
@@ -405,9 +405,9 @@ if (!$error && !TESTMODE)
   { reset($pre_query);
     foreach ($pre_query as $pre_query_value)
     {	if (!$mysqli->query($pre_query_value))
-    	{ echo ("<p class=\"error\">Error with pre-query.</p>\n");
-      	echo ("<p>Query: ".trim(nl2br(htmlentities($pre_query_value)))."</p>\n");
-      	echo ("<p>MySQL: ".$mysqli->error."</p>\n");
+    	{ echo ("<p class=\"error\">Erreur avec la pré-requête.</p>\n");
+      	echo ("<p>Requête : ".trim(nl2br(htmlentities($pre_query_value)))."</p>\n");
+      	echo ("<p>MySQL : ".$mysqli->error."</p>\n");
       	$error=true;
       	break;
      }
@@ -441,7 +441,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
         if ($dirfile != "." && $dirfile != ".." && $dirfile!=basename($_SERVER["SCRIPT_FILENAME"]) && preg_match("/\.(sql|gz|csv)$/i",$dirfile))
         { if (!$dirhead)
           { echo ("<table width=\"100%\" cellspacing=\"2\" cellpadding=\"2\">\n");
-            echo ("<tr><th>Filename</th><th>Size</th><th>Date&amp;Time</th><th>Type</th><th>&nbsp;</th><th>&nbsp;</th>\n");
+            echo ("<tr><th>Nom de fichier</th><th>Taille</th><th>Date &amp; Heure</th><th>Type</th><th>&nbsp;</th><th>&nbsp;</th>\n");
             $dirhead=true;
           }
           echo ("<tr><td>$dirfile</td><td class=\"right\">".filesize($upload_dir.'/'.$dirfile)."</td><td>".date ("Y-m-d H:i:s", filemtime($upload_dir.'/'.$dirfile))."</td>");
@@ -456,7 +456,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
             echo ("<td>Misc</td>");
 
           if ((preg_match("/\.gz$/i",$dirfile) && function_exists("gzopen")) || preg_match("/\.sql$/i",$dirfile) || preg_match("/\.csv$/i",$dirfile))
-            echo ("<td><a href=\"".$_SERVER["PHP_SELF"]."?start=1&amp;fn=".urlencode($dirfile)."&amp;foffset=0&amp;totalqueries=0&amp;delimiter=".urlencode($delimiter)."\">Start Import</a> into $db_name at $db_server</td>\n <td><a href=\"".$_SERVER["PHP_SELF"]."?delete=".urlencode($dirfile)."\">Delete file</a></td></tr>\n");
+            echo ("<td><a href=\"".$_SERVER["PHP_SELF"]."?start=1&amp;fn=".urlencode($dirfile)."&amp;foffset=0&amp;totalqueries=0&amp;delimiter=".urlencode($delimiter)."\">Démarrer l'import</a> dans $db_name sur $db_server</td>\n <td><a href=\"".$_SERVER["PHP_SELF"]."?delete=".urlencode($dirfile)."\">Détruire le fichier</a></td></tr>\n");
 // TODO: echo ("<td><a href=\"".$_SERVER["PHP_SELF"]."?start=1&amp;fn=".urlencode($dirfile)."&amp;foffset=0&amp;totalqueries=0&amp;delimiter=".urlencode($delimiter)."\">Start Import</a></td>\n <td><a href=\"".$_SERVER["PHP_SELF"]."?delete=".urlencode($dirfile)."\">Delete file</a></td></tr>\n");
           else
             echo ("<td>&nbsp;</td>\n <td>&nbsp;</td></tr>\n");
@@ -467,7 +467,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
     if ($dirhead) 
       echo ("</table>\n");
     else 
-      echo ("<p>No uploaded SQL, GZ or CSV files found in the working directory</p>\n");
+      echo ("<p>Aucun Dump SQL, GZ ou CSV n'a été trouvé dans le répertoire de travail</p>\n");
   }
   else
   { echo ("<p class=\"error\">Error listing directory $upload_dir</p>\n");
@@ -479,7 +479,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
 // Single file mode
 
 if (!$error && !isset ($_REQUEST["fn"]) && $filename!="")
-{ echo ("<p><a href=\"".$_SERVER["PHP_SELF"]."?start=1&amp;fn=".urlencode($filename)."&amp;foffset=0&amp;totalqueries=0\">Start Import</a> from $filename into $db_name at $db_server</p>\n");
+{ echo ("<p><a href=\"".$_SERVER["PHP_SELF"]."?start=1&amp;fn=".urlencode($filename)."&amp;foffset=0&amp;totalqueries=0\">Import démarré</a> depuis $filename dans $db_name sur $db_server</p>\n");
 }
 
 
@@ -492,19 +492,19 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
 
   do { $tempfilename=$upload_dir.'/'.time().".tmp"; } while (file_exists($tempfilename)); 
   if (!($tempfile=@fopen($tempfilename,"w")))
-  { echo ("<p>Upload form disabled. Permissions for the working directory <i>$upload_dir</i> <b>must be set writable for the webserver</b> in order ");
-    echo ("to upload files here. Alternatively you can upload your dump files via FTP.</p>\n");
+  { echo ("<p>Formulaire de téléchargement désactivé. Les autorisations pour le répertoire de travail <i>$upload_dir</i> <b>doivent être en écriture pour le serveur Web</b> en priorité ");
+    echo ("pour télécharger des fichiers ici. Sinon, vous pouvez uploader vos fichiers de Dump via FTP.</p>\n");
   }
   else
   { fclose($tempfile);
     unlink ($tempfilename);
  
-    echo ("<p>You can now upload your dump file up to $upload_max_filesize bytes (".round ($upload_max_filesize/1024/1024)." Mbytes)  ");
-    echo ("directly from your browser to the server. Alternatively you can upload your dump files of any size via FTP.</p>\n");
+    echo ("<p>Vous pouvez maintenant télécharger votre fichier de sauvegarde de $upload_max_filesize octets (".round ($upload_max_filesize/1024/1024)." Mbytes)  ");
+    echo ("directement depuis votre navigateur sur ce serveur. Sinon, vous pouvez uploader vos fichiers de Dump via FTP.</p>\n");
 ?>
 <form method="POST" action="<?php echo ($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="$upload_max_filesize">
-<p>Dump file: <input type="file" name="dumpfile" accept="*/*" size="60"></p>
+<p><b>Fichier de Dump :</b> <input type="file" name="dumpfile" accept="*/*" size="60"></p>
 <p><input type="submit" name="uploadbutton" value="Upload"></p>
 </form>
 <?php
@@ -520,7 +520,7 @@ if (!$error && !TESTMODE && !isset($_REQUEST["fn"]))
   { $row = $result->fetch_assoc();
     if ($row) 
     { $charset = $row['Value'];
-      echo ("<p>Note: The current mySQL connection charset is <i>$charset</i>. Your dump file must be encoded in <i>$charset</i> in order to avoid problems with non-latin characters. You can change the connection charset using the \$db_connection_charset variable in bigdump.php</p>\n");
+      echo ("<p><b><u>Remarque :</u></b> Le jeu de caractères de connexion MySQL actuel est <b><i>$charset</i></b>. Votre fichier de Dump doit être encodé en <b><i>$charset</i></b> afin d'éviter des problèmes avec les caractères non latins. Vous pouvez changer le jeu de caractères de connexion en utilisant la variable <b>\$db_connection_charset</b> dans bigdump.php</p>\n");
     }
     $result->free();
   }
@@ -548,10 +548,10 @@ if (!$error && isset($_REQUEST["start"]))
     $gzipmode=false;
 
   if ((!$gzipmode && !$file=@fopen($upload_dir.'/'.$curfilename,"r")) || ($gzipmode && !$file=@gzopen($upload_dir.'/'.$curfilename,"r")))
-  { echo ("<p class=\"error\">Can't open ".$curfilename." for import</p>\n");
-    echo ("<p>Please, check that your dump file name contains only alphanumerical characters, and rename it accordingly, for example: $curfilename.".
-           "<br>Or, specify \$filename in bigdump.php with the full filename. ".
-           "<br>Or, you have to upload the $curfilename to the server first.</p>\n");
+  { echo ("<p class=\"error\">Ne peut pas ouvrir ".$curfilename." pour import</p>\n");
+    echo ("<p>Veuillez vérifier que votre nom de fichier de Dump ne contient que des caractères alphanumériques et renommez-le en conséquences, par exemple: $curfilename.".
+           "<br>Ou, spécifiez \$filename dans bigdump.php avec le nom de fichier complet. ".
+           "<br>Ou, vous pouvez uploader le fichier $curfilename sur le serveur en premier.</p>\n");
     $error=true;
   }
 
@@ -562,14 +562,14 @@ if (!$error && isset($_REQUEST["start"]))
     else $filesize = gztell($file);                   // Always zero, ignore
   }
   else
-  { echo ("<p class=\"error\">I can't seek into $curfilename</p>\n");
+  { echo ("<p class=\"error\">Ne peux pas chercher dans $curfilename</p>\n");
     $error=true;
   }
 
 // Stop if csv file is used, but $csv_insert_table is not set
 
   if (!$error && ($csv_insert_table == "") && (preg_match("/(\.csv)$/i",$curfilename)))
-  { echo ("<p class=\"error\">You have to specify \$csv_insert_table when using a CSV file. </p>\n");
+  { echo ("<p class=\"error\">Vous avez spécifié \$csv_insert_table pour l'utilisation d'un fichier CSV. </p>\n");
     $error=true;
   }
 }
@@ -587,7 +587,7 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
 // Check start and foffset are numeric values
 
   if (!is_numeric($_REQUEST["start"]) || !is_numeric($_REQUEST["foffset"]))
-  { echo ("<p class=\"error\">UNEXPECTED: Non-numeric values for start and foffset</p>\n");
+  { echo ("<p class=\"error\">INATTENDU : Valeurs non numériques pour start et offset</p>\n");
     $error=true;
   }
   else
@@ -606,9 +606,9 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
   { 
     $query = "DELETE FROM `$csv_insert_table`";
     if (!TESTMODE && !$mysqli->query(trim($query)))
-    { echo ("<p class=\"error\">Error when deleting entries from $csv_insert_table.</p>\n");
-      echo ("<p>Query: ".trim(nl2br(htmlentities($query)))."</p>\n");
-      echo ("<p>MySQL: ".$mysqli->error."</p>\n");
+    { echo ("<p class=\"error\">Erreur lors de la suppression d'entrées de $csv_insert_table.</p>\n");
+      echo ("<p>Requête : ".trim(nl2br(htmlentities($query)))."</p>\n");
+      echo ("<p>MySQL : ".$mysqli->error."</p>\n");
       $error=true;
     }
   }
@@ -618,23 +618,23 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
   if (!$error)
   { skin_open();
     if (TESTMODE) 
-      echo ("<p class=\"centr\">TEST MODE ENABLED</p>\n");
-    echo ("<p class=\"centr\">Processing file: <b>".$curfilename."</b></p>\n");
-    echo ("<p class=\"smlcentr\">Starting from line: ".$_REQUEST["start"]."</p>\n");	
+      echo ("<p class=\"centr\">MODE TEST ACTIF</p>\n");
+    echo ("<p class=\"centr\">Fichier de traitement : <b>".$curfilename."</b></p>\n");
+    echo ("<p class=\"smlcentr\">Départ depuis la ligne : ".$_REQUEST["start"]."</p>\n");	
     skin_close();
   }
 
 // Check $_REQUEST["foffset"] upon $filesize (can't do it on gzipped files)
 
   if (!$error && !$gzipmode && $_REQUEST["foffset"]>$filesize)
-  { echo ("<p class=\"error\">UNEXPECTED: Can't set file pointer behind the end of file</p>\n");
+  { echo ("<p class=\"error\">INATTENDU : Impossible de définir le pointeur de fichier après la fin du fichier</p>\n");
     $error=true;
   }
 
 // Set file pointer to $_REQUEST["foffset"]
 
   if (!$error && ((!$gzipmode && fseek($file, $_REQUEST["foffset"])!=0) || ($gzipmode && gzseek($file, $_REQUEST["foffset"])!=0)))
-  { echo ("<p class=\"error\">UNEXPECTED: Can't set file pointer to offset: ".$_REQUEST["foffset"]."</p>\n");
+  { echo ("<p class=\"error\">INATTENDU : Impossible de définir le pointeur de fichier sur l'offset : ".$_REQUEST["foffset"]."</p>\n");
     $error=true;
   }
 
@@ -744,12 +744,12 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
 
       if ($querylines>$max_query_lines)
       {
-        echo ("<p class=\"error\">Stopped at the line $linenumber. </p>");
-        echo ("<p>At this place the current query includes more than ".$max_query_lines." dump lines. That can happen if your dump file was ");
-        echo ("created by some tool which doesn't place a semicolon followed by a linebreak at the end of each query, or if your dump contains ");
-        echo ("extended inserts or very long procedure definitions. Please read the <a href=\"http://www.ozerov.de/bigdump/usage/\">BigDump usage notes</a> ");
-        echo ("for more infos. Ask for our support services ");
-        echo ("in order to handle dump files containing extended inserts.</p>\n");
+        echo ("<p class=\"error\">Stoppé à la ligne $linenumber. </p>");
+        echo ("<p>Ici, la requête en cours comprend plus de ".$max_query_lines." requêtes autorisées par ligne. Cela peut arriver si votre fichier de Dump a été créé ");
+        echo ("par un outil qui ne place pas de point-virgule suivi d'un saut de ligne à la fin de chaque requête, ou si votre Dump contient ");
+        echo ("des insertions étendues ou de très longues définitions de procédure. Lisez les <a href=\"http://www.ozerov.de/bigdump/usage/\">notes d'usage BigDump</a> ");
+        echo ("Pour plus d'infos. Demandez nos services d'assistance ");
+        echo ("afin de gérer les fichiers de Dump contenant des insertions étendues.</p>\n");
         $error=true;
         break;
       }
@@ -772,9 +772,9 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
 // echo ("<p>Query: ".trim(nl2br(htmlentities($query)))."</p>\n");
 
         if (!TESTMODE && !$mysqli->query($query))
-        { echo ("<p class=\"error\">Error at the line $linenumber: ". trim($dumpline)."</p>\n");
-          echo ("<p>Query: ".trim(nl2br(htmlentities($query)))."</p>\n");
-          echo ("<p>MySQL: ".$mysqli->error."</p>\n");
+        { echo ("<p class=\"error\">Erreur à la ligne $linenumber: ". trim($dumpline)."</p>\n");
+          echo ("<p>Requête : ".trim(nl2br(htmlentities($query)))."</p>\n");
+          echo ("<p>MySQL : ".$mysqli->error."</p>\n");
           $error=true;
           break;
         }
@@ -795,7 +795,7 @@ if (!$error && isset($_REQUEST["start"]) && isset($_REQUEST["foffset"]) && preg_
     else
       $foffset = gztell($file);
     if (!$foffset)
-    { echo ("<p class=\"error\">UNEXPECTED: Can't read the file pointer offset</p>\n");
+    { echo ("<p class=\"error\">INATTENDU : Impossible de lire l'offset du pointeur de fichier</p>\n");
       $error=true;
     }
   }
@@ -861,16 +861,16 @@ skin_open();
       $pct_done    = ' ? ';
       $pct_togo    = ' ? ';
       $pct_tota    = 100;
-      $pct_bar     = str_replace(' ','&nbsp;','<tt>[         Not available for gzipped files          ]</tt>');
+      $pct_bar     = str_replace(' ','&nbsp;','<tt>[         Non valable avec les fichiers GZip          ]</tt>');
     }
     
     echo ("
     <center>
     <table width=\"520\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">
-    <tr><th class=\"bg4\"> </th><th class=\"bg4\">Session</th><th class=\"bg4\">Done</th><th class=\"bg4\">To go</th><th class=\"bg4\">Total</th></tr>
-    <tr><th class=\"bg4\">Lines</th><td class=\"bg3\">$lines_this</td><td class=\"bg3\">$lines_done</td><td class=\"bg3\">$lines_togo</td><td class=\"bg3\">$lines_tota</td></tr>
-    <tr><th class=\"bg4\">Queries</th><td class=\"bg3\">$queries_this</td><td class=\"bg3\">$queries_done</td><td class=\"bg3\">$queries_togo</td><td class=\"bg3\">$queries_tota</td></tr>
-    <tr><th class=\"bg4\">Bytes</th><td class=\"bg3\">$bytes_this</td><td class=\"bg3\">$bytes_done</td><td class=\"bg3\">$bytes_togo</td><td class=\"bg3\">$bytes_tota</td></tr>
+    <tr><th class=\"bg4\"> </th><th class=\"bg4\">Session</th><th class=\"bg4\">Terminé</th><th class=\"bg4\">Vers</th><th class=\"bg4\">Total</th></tr>
+    <tr><th class=\"bg4\">Lignes</th><td class=\"bg3\">$lines_this</td><td class=\"bg3\">$lines_done</td><td class=\"bg3\">$lines_togo</td><td class=\"bg3\">$lines_tota</td></tr>
+    <tr><th class=\"bg4\">Requêtes</th><td class=\"bg3\">$queries_this</td><td class=\"bg3\">$queries_done</td><td class=\"bg3\">$queries_togo</td><td class=\"bg3\">$queries_tota</td></tr>
+    <tr><th class=\"bg4\">Octets</th><td class=\"bg3\">$bytes_this</td><td class=\"bg3\">$bytes_done</td><td class=\"bg3\">$bytes_togo</td><td class=\"bg3\">$bytes_tota</td></tr>
     <tr><th class=\"bg4\">KB</th><td class=\"bg3\">$kbytes_this</td><td class=\"bg3\">$kbytes_done</td><td class=\"bg3\">$kbytes_togo</td><td class=\"bg3\">$kbytes_tota</td></tr>
     <tr><th class=\"bg4\">MB</th><td class=\"bg3\">$mbytes_this</td><td class=\"bg3\">$mbytes_done</td><td class=\"bg3\">$mbytes_togo</td><td class=\"bg3\">$mbytes_tota</td></tr>
     <tr><th class=\"bg4\">%</th><td class=\"bg3\">$pct_this</td><td class=\"bg3\">$pct_done</td><td class=\"bg3\">$pct_togo</td><td class=\"bg3\">$pct_tota</td></tr>
@@ -882,13 +882,13 @@ skin_open();
 // Finish message and restart the script
 
     if ($linenumber<$_REQUEST["start"]+$linespersession)
-    { echo ("<p class=\"successcentr\">Congratulations: End of file reached, assuming OK</p>\n");
-      echo ("<p class=\"successcentr\">IMPORTANT: REMOVE YOUR DUMP FILE and BIGDUMP SCRIPT FROM SERVER NOW!</p>\n");
-      echo ("<p class=\"centr\">Thank you for using this tool! Please rate <a href=\"http://www.hotscripts.com/listing/bigdump/?RID=403\" target=\"_blank\">Bigdump at Hotscripts.com</a></p>\n");
-      echo ("<p class=\"centr\">You can send me some bucks or euros as appreciation via PayPal. Thank you!</p>\n");
+    { echo ("<p class=\"successcentr\">Félicitations : Fin de fichier atteinte, en supposant que tout est OK</p>\n");
+      echo ("<p class=\"successcentr\">IMPORTANT : ENLEVEZ IMMÉDIATEMENT VOTRE FICHIER DUMP et le SCRIPT BIGDUMP DU SERVEUR!</p>\n");
+      echo ("<p class=\"centr\">Merci d'avoir utilisé cet outil ! Vous pouvez noter <a href=\"http://www.hotscripts.com/listing/bigdump/?RID=403\" target=\"_blank\">Bigdump à Hotscripts.com</a></p>\n");
+      echo ("<p class=\"centr\">Vous pouvez m'envoyer des dollars ou des euros en guise d'appréciation via PayPal. Je vous remercie !</p>\n");
 ?>
 
-<!-- Start Paypal donation code -->
+<!-- Start Paypal donation code 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick" />
 <input type="hidden" name="business" value="alexey@ozerov.de" />
@@ -901,7 +901,7 @@ skin_open();
 <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" />
 <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
 </form>
-<!-- End Paypal donation code -->
+ End Paypal donation code -->
 
 <?php      
       do_action('script_finished');
@@ -909,26 +909,26 @@ skin_open();
     }
     else
     { if ($delaypersession!=0)
-        echo ("<p class=\"centr\">Now I'm <b>waiting $delaypersession milliseconds</b> before starting next session...</p>\n");
+        echo ("<p class=\"centr\">Maintenant, j'<b>attends $delaypersession millisecondes</b> avant le départ de la session suivante...</p>\n");
       if (!$ajax) 
         echo ("<script language=\"JavaScript\" type=\"text/javascript\">window.setTimeout('location.href=\"".$_SERVER["PHP_SELF"]."?start=$linenumber&fn=".urlencode($curfilename)."&foffset=$foffset&totalqueries=$totalqueries&delimiter=".urlencode($delimiter)."\";',500+$delaypersession);</script>\n");
 
       echo ("<noscript>\n");
-      echo ("<p class=\"centr\"><a href=\"".$_SERVER["PHP_SELF"]."?start=$linenumber&amp;fn=".urlencode($curfilename)."&amp;foffset=$foffset&amp;totalqueries=$totalqueries&amp;delimiter=".urlencode($delimiter)."\">Continue from the line $linenumber</a> (Enable JavaScript to do it automatically)</p>\n");
+      echo ("<p class=\"centr\"><a href=\"".$_SERVER["PHP_SELF"]."?start=$linenumber&amp;fn=".urlencode($curfilename)."&amp;foffset=$foffset&amp;totalqueries=$totalqueries&amp;delimiter=".urlencode($delimiter)."\">Continue depuis la ligne $linenumber</a> (Activez JavaScript pour le faire automatiquement)</p>\n");
       echo ("</noscript>\n");
    
-      echo ("<p class=\"centr\">Press <b><a href=\"".$_SERVER["PHP_SELF"]."\">STOP</a></b> to abort the import <b>OR WAIT!</b></p>\n");
+      echo ("<p class=\"centr\">Appuyez sur <b><a href=\"".$_SERVER["PHP_SELF"]."\">STOP</a></b> pour stopper l'import <b>OU PATIENTEZ !</b></p>\n");
     }
   }
   else 
-    echo ("<p class=\"error\">Stopped on error</p>\n");
+    echo ("<p class=\"error\">Stoppé sur une erreur</p>\n");
 
 skin_close();
 
 }
 
 if ($error)
-  echo ("<p class=\"centr\"><a href=\"".$_SERVER["PHP_SELF"]."\">Start from the beginning</a> (DROP the old tables before restarting)</p>\n");
+  echo ("<p class=\"centr\"><a href=\"".$_SERVER["PHP_SELF"]."\">Démarrage depuis le début</a> (Supprimez les anciennes tables avant de redémarrer)</p>\n");
 
 if ($mysqli) $mysqli->close();
 if ($file && !$gzipmode) fclose($file);
@@ -937,6 +937,7 @@ else if ($file && $gzipmode) gzclose($file);
 ?>
 
 <p class="centr">&copy; 2003-2015 <a href="mailto:alexey@ozerov.de">Alexey Ozerov</a></p>
+<p class="centr">Traduction française, avril 2019, <a href="http://chez-oim.org">Alex B. (alexetgus)</a></p>
 
 </td></tr></table>
 
@@ -1166,4 +1167,3 @@ function create_ajax_script()
 }
 
 ?>
-
