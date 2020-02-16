@@ -1,46 +1,43 @@
 # BigDump
 
-## Staggered MySQL Dump Importer
+## Importateur de dump MySQL
 
-**Description**: Staggered import of large and very large MySQL Dumps (like phpMyAdmin dumps) even through the web servers with hard runtime limit and those in safe mode. The script imports only a small part of the huge dump and restarts itself. The next session starts where the last was stopped.
+**Description** : Importation de gros et très gros dumps MySQL (comme les dumps phpMyAdmin) même à travers les serveurs web avec limite d'exécution en dur et ceux en mode sécurisé. Le script n'importe qu'une petite partie de l'énorme dump et redémarre lui-même. La session suivante commence là où la précédente a été arrêtée.
 
-## Credits
+## Crédits
 
-This code is originally written by [Alexey Ozerov][3].
+Ce code a été écrit à l'origine par Alexey Ozerov.
+Puis, il a été forké par Alex B. et traduit en français.
 
-## Usage
+## Utilisation
 
-1. Download and unzip [_bigdump.zip_][1] on your PC.
-2. Open _bigdump.php_ in a text editor, adjust the database configuration and dump file encoding.
-3. Drop the old tables on the target database if your dump doesn't contain "DROP TABLE" (use phpMyAdmin).
-4. Create the working directory (e.g. _dump_) on your web server
-5. Upload _bigdump.php_ and the dump files (*.sql or *.gz) via FTP to the working directory (take care of **TEXT** mode upload for _bigdump.php_ and _dump.sql_ but **BINARY** mode for _dump.gz_ if uploading from MS Windows).
-6. Run the _bigdump.php_ from your web browser via URL like _http://www.yourdomain.com/dump/bigdump.php_.
-7. Now you can select the file to be imported from the listing of your working directory. Click "Start import" to start.
-8. BigDump will start every next import session automatically if JavaScript is enabled in your browser.
-9. Relax and wait for the script to finish. Do NOT close the browser window!
-10. **IMPORTANT:** Remove _bigdump.php_ and your dump files from your web server.
+1. Téléchargez et dézippez _bigdump.zip_ sur votre PC.
+2. Ouvrez _bigdump.php_ dans un éditeur de texte, ajustez la configuration de la base de données et spécifiez l'encodage des fichiers.
+3. Retirez les anciennes tables sur la base de données cible si votre dump ne contient pas "DROP TABLE" (utilisez phpMyAdmin).
+4. Créez le répertoire de travail (par exemple /dump) sur votre serveur web
+5. Téléchargez _bigdump.php_ et les fichiers dump (*.sql ou *.gz) par FTP dans le répertoire de travail (attention au mode **TEXT** pour _bigdump.php_ et _dump.sql_ mais au mode **BINARY** pour _dump.gz_ si vous téléchargez depuis MS Windows).
+6. Exécutez le fichier _bigdump.php_ à partir de votre navigateur web via une URL comme _http://www.yourdomain.com/dump/bigdump.php_.
+7. Vous pouvez maintenant sélectionner le fichier à importer dans la liste de votre répertoire de travail. Cliquez sur "Démarrer l'importation" pour commencer.
+8. BigDump démarrera automatiquement chaque session d'importation suivante si JavaScript est activé dans votre navigateur.
+9. Détendez-vous et attendez que le script se termine. Ne fermez PAS la fenêtre du navigateur !
+10. **IMPORTANT** : Supprimez _bigdump.php_ et vos fichiers de dump de votre serveur web.
 
-## Advanced notes
+## Notes avancées
 
-**Note 1:** BigDump will fail processing large tables containing extended inserts. An extended insert contains all table entries within one SQL query. BigDump isn't able to split such SQL queries. In most cases BigDump will stop if some query includes to many lines. But if PHP complains that _allowed memory size exhausted_ or _MySQL server has gone away_ your dump probably also contains extended inserts. Please turn off extended inserts when exporting database from phpMyAdmin. If you only have a dump file with extended inserts please ask for our [support service][2] in order to convert it into a file usable by BigDump.
+**Note 1 :** : BigDump ne pourra pas traiter de grands tableaux contenant des insertions étendues. Un insert étendu contient toutes les entrées de la table dans une seule requête SQL. BigDump n'est pas capable de fractionner de telles requêtes SQL. Dans la plupart des cas, BigDump s'arrêtera si une requête comprend trop de lignes. Mais si PHP se plaint que la taille mémoire autorisée est épuisée ou que le serveur MySQL a disparu, votre dump contient probablement aussi des insertions étendues. Veuillez désactiver les insertions étendues lorsque vous exportez une base de données depuis phpMyAdmin.
 
-**Note 2:** If you want to upload the dump files via web browser give the scripts writing permissions on the working directory (e.g. make chmod 777 on a Linux based system). You can upload the dump files from the browser up to the size limit set by the current PHP configuration of the web server. Alternatively you can upload any files via FTP. Some web servers disallow script execution in the directory with writing permissions for security reasons. If you changed the permissions on the working directory and you are getting a server error when running the script restore the permissions to their normal state (chmod 755) for directories.
+**Note 2 :** : Si vous souhaitez télécharger les fichiers de dump via un navigateur web, donnez aux scripts les droits d'écriture sur le répertoire de travail (par exemple chmod 777 sur un système basé sur Linux). Vous pouvez télécharger les fichiers de dump depuis le navigateur jusqu'à la taille limite fixée par la configuration PHP actuelle du serveur web. Vous pouvez également télécharger tous les fichiers par FTP. Certains serveurs web interdisent l'exécution de scripts dans le répertoire avec des droits d'écriture pour des raisons de sécurité. Si vous avez modifié les permissions sur le répertoire de travail et que vous obtenez une erreur de serveur lors de l'exécution du script, rétablissez les permissions à leur état normal (chmod 755) pour les répertoires.
 
-**Note 3:** If Timeout errors still occur you may need to adjust the $linespersession setting in _bigdump.php_.
+**Note 3 :** : Si des erreurs de Timeout se produisent encore, vous devrez peut-être ajuster le paramètre $linespersession dans _bigdump.php_.
 
-**Note 4:** If mySQL server overrun occurs due to max_requests restriction you can use $delaypersession setting to let the script sleep some milliseconds or more before starting next session. This setting will only work if the JavaScript is activated. Importing dump file on such servers may be very time consuming.
+**Note 4 :** : Si le dépassement du serveur MySQL se produit en raison de la restriction max_requests, vous pouvez utiliser le paramètre $delaypersession pour laisser le script en veille quelques millisecondes ou plus avant de démarrer la session suivante. Ce paramètre ne fonctionnera que si JavaScript est activé. L'importation de fichiers de dump sur de tels serveurs peut prendre beaucoup de temps.
 
-**Note 5:** BigDump is currently not able to restore a single dump file with multiple databases inside (switched by the USE statement). BigDump is also not able to restore a single specific database from the dump file containing multiple databases.
+**Note 5 :** : BigDump n'est actuellement pas capable de restaurer un seul fichier de dump avec plusieurs bases de données à l'intérieur (commutées par la déclaration USE). BigDump n'est pas non plus en mesure de restaurer une seule base de données spécifique à partir du fichier de dump contenant plusieurs bases de données.
 
-**Note 6:** If you experience problems with non-latin characters while using BigDump you have to adjust the $db_connection_char_set configuration variable in _bigdump.php_ to match the encoding of your dump file.
+**Note 6 :** : Si vous rencontrez des problèmes avec des caractères non-latins lors de l'utilisation de BigDump, vous devez ajuster la variable de configuration $db_connection_char_set dans _bigdump.php_ pour qu'elle corresponde à l'encodage de votre fichier de dump.
 
-**Note 7:** GZip support is only available with PHP 4.3.0 and later. Using a huge GZip compressed dump file can cause the script to exceed the PHP memory/runtime limit since the dump file has to be unpacked from the beginning every time the session starts. If this happens use the uncompressed dump. It's your only chance.
+**Note 7 :** : Le support de GZip n'est disponible qu'avec PHP 4.3.0 et plus. L'utilisation d'un énorme fichier de dump compressé avec GZip peut entraîner le dépassement de la limite de mémoire/temps d'exécution de PHP, car le fichier de dump doit être décompressé dès le début à chaque fois que la session démarre. Si cela se produit, utilisez le fichier de dump non compressé. C'est votre seule chance.
 
-**Note 8:** It's not a very good idea, but if you can also import from CSV file into one mySQL table using Bigdump. You have to specify the table name in $csv_insert_table. Please also check other CSV settings in the Bigdump configuration.
+**Note 8 :** : Ce n'est pas une très bonne idée, mais vous pouvez également importer un fichier CSV dans une table mySQL en utilisant Bigdump. Vous devez spécifier le nom de la table dans $csv_insert_table. Veuillez également vérifier les autres paramètres CSV dans la configuration de Bigdump.
 
-War dieser Beitrag hilfreich? Empfehlen Sie ihn weiter!  
-
-[1]: http://www.ozerov.de/bigdump.zip
-[2]: http://www.ozerov.de/bigdump/support/ "Support"
-[3]: http://www.ozerov.de/bigdump/
+Cette contribution a-t-elle été utile ? Recommandez-la à un ami !
